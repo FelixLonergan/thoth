@@ -6,6 +6,13 @@ authors = ["Felix <felix.lonergan@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
+streamlit = "^0.58.0"
+pandas = "^1.0.3"
+numpy = "^1.18.3"
+scikit-learn = "^0.22.2"
+matplotlib = "^3.2.1"
+seaborn = "^0.10.1"
+graphviz = "^0.14"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

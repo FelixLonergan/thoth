@@ -1,4 +1,3 @@
-#%%
 import os
 
 import graphviz
@@ -18,6 +17,7 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_graphviz, plot_tree
 import altair as alt
+from handler.generic import Handler
 
 SEED = 42
 
@@ -70,7 +70,6 @@ def tree_plot(dt: DecisionTreeClassifier, iris: dict):
         feature_names=iris["feature_names"],
     )
     graph = graphviz.Source(dot_data)
-    print(dot_data)
     graph.render(filename="temp", format="png")
     img = Image.open("temp.png")
     os.remove("temp.png")
@@ -79,32 +78,65 @@ def tree_plot(dt: DecisionTreeClassifier, iris: dict):
 
 
 st.title("Decision Trees")
+handler = Handler("dt")
+st.write(handler.get_intro())
 
 dataloaders = {
     "Breast Cancer": load_breast_cancer,
     "Iris": load_iris,
     "Wine": load_wine,
 }
+
 loader_name = st.selectbox("Choose a Dataset", list(dataloaders.keys()))
 dataloader = dataloaders.get(loader_name, load_iris)
-
 dataset, data = load_process_data(dataloader)
 train_x, test_x, train_y, test_y = train_test_split(
     data.drop("label", axis=1), dataset["target"], train_size=0.8
 )
 
-st.dataframe(data, width=10000)
+# Optionally display dataset information
+if st.checkbox("Display dataset information"):
+    st.write(dataset["DESCR"].split(":", 1)[1])
+st.write(data)
+
+# * EDA
 st.header("Simple Data Exploration")
-feat = st.selectbox("Feature", data.columns)
 
-chart = (
+# Class Balance
+class_chart = (
     alt.Chart(data)
-    .mark_bar(opacity=0.8)
-    .encode(x=alt.X(feat, bin=feat != "label"), y="count()", color="label",)
+    .mark_bar()
+    .encode(
+        y=alt.Y("label", axis=alt.Axis(title="Class")),
+        x=alt.X("count()", axis=alt.Axis(title="Count")),
+        color="label",
+    )
+    .properties(title="Class Distribution")
 )
+st.altair_chart(class_chart, use_container_width=True)
 
-st.altair_chart(chart, use_container_width=True)
+feat = st.selectbox("Feature", data.drop("label", axis=1).columns)
+density_chart = (
+    alt.Chart(data)
+    .transform_density(
+        density=feat,
+        groupby=["label"],
+        steps=1000,
+        # counts=True,
+        extent=[min(data[feat]), max(data[feat])],
+    )
+    .mark_area()
+    .encode(
+        alt.X(f"value:Q", axis=alt.Axis(title=f"{feat}")),
+        alt.Y("density:Q", axis=alt.Axis(title="Density")),
+        alt.Color("label:N"),
+    )
+    .properties(title=f"Distribution of {feat} for each class")
+)
+st.altair_chart(density_chart, use_container_width=True)
 
+
+# * Parameter Selection
 st.write("## Parameter Selection")
 params = {"random_state": SEED}
 params["criterion"] = st.selectbox("Criterion", ["gini", "entropy"])
@@ -138,5 +170,3 @@ with st.spinner("Plotting tree..."):
     st.image(tree_plot(dt, dataset), use_column_width=True)
 
 st.write("## Tree Parameters", dt.get_params())
-
-# %%

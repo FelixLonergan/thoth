@@ -2,7 +2,7 @@ import os.path
 from abc import ABC, abstractmethod
 import streamlit as st
 from sklearn.model_selection import train_test_split
-from helper import load_process_data
+from thoth.helper import load_process_data
 import altair as alt
 
 SEED = 42

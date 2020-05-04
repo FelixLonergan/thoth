@@ -1,9 +1,9 @@
-from handler.generic import Handler
+from thoth.handler.generic import Handler
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 import graphviz
 import os
 from PIL import Image
-from helper import load_process_data, train_model, get_metrics
+from thoth.helper import load_process_data, train_model, get_metrics
 import streamlit as st
 from sklearn.model_selection import train_test_split
 import pandas as pd

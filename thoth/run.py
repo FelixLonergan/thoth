@@ -110,6 +110,7 @@ class_chart = (
         y=alt.Y("label", axis=alt.Axis(title="Class")),
         x=alt.X("count()", axis=alt.Axis(title="Count")),
         color="label",
+        tooltip=["count()", "label"]
     )
     .properties(title="Class Distribution")
 )
@@ -125,11 +126,12 @@ density_chart = (
         # counts=True,
         extent=[min(data[feat]), max(data[feat])],
     )
-    .mark_area()
+    .mark_area(opacity=0.8)
     .encode(
         alt.X(f"value:Q", axis=alt.Axis(title=f"{feat}")),
         alt.Y("density:Q", axis=alt.Axis(title="Density")),
         alt.Color("label:N"),
+        tooltip=["label", f"density:Q"]
     )
     .properties(title=f"Distribution of {feat} for each class")
 )

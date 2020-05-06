@@ -3,11 +3,14 @@ import streamlit as st
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 
 import thoth.helper as helper
-from thoth.handler.generic import Handler
 from thoth import SEED
+from thoth.handler.BaseHandler import BaseHandler
 
 
-class DTHandler(Handler):
+class DTHandler(BaseHandler):
+    """Page handler for the Decision Tree article (short name 'dt')
+    """
+
     def __init__(self):
         super().__init__("dt")
         self.data_options = ["Breast Cancer", "Iris", "Wine"]
@@ -52,7 +55,6 @@ class DTHandler(Handler):
         dt = helper.train_model(
             DecisionTreeClassifier, params, self.train_x, self.train_y
         )
-
         train_metrics = helper.get_metrics(dt, self.train_x, self.train_y).rename(
             index={0: "Train"}
         )
@@ -63,23 +65,16 @@ class DTHandler(Handler):
         st.write(train_metrics.append(test_metrics))
 
         st.subheader("View Tree")
-        with st.spinner("Plotting tree..."):
-            st.graphviz_chart(
-                self.tree_plot(dt, self.dataset), use_container_width=True
+        with st.spinner("Plotting tree"):
+            tree_dot = export_graphviz(
+                dt,
+                out_file=None,
+                rounded=True,
+                filled=True,
+                class_names=self.dataset["target_names"],
+                feature_names=self.dataset["feature_names"],
             )
+            st.graphviz_chart(tree_dot, use_container_width=True)
 
         st.subheader("Tree Parameters")
         st.write(dt.get_params())
-
-    @staticmethod
-    @st.cache(show_spinner=False)
-    def tree_plot(dt: DecisionTreeClassifier, dataset: dict):
-        dot_data = export_graphviz(
-            dt,
-            out_file=None,
-            rounded=True,
-            filled=True,
-            class_names=dataset["target_names"],
-            feature_names=dataset["feature_names"],
-        )
-        return dot_data

@@ -9,8 +9,14 @@ import thoth.helper as helper
 from thoth import SEED
 
 
-class Handler(ABC):
-    def __init__(self, name):
+class BaseHandler(ABC):
+    """Abstract base class to handle article specific elements of app
+
+    Args:
+        name (str): The short name of the article
+    """
+
+    def __init__(self, name: str):
         super().__init__()
         self.name = name
         self.data_options = []
@@ -27,33 +33,58 @@ class Handler(ABC):
 
     @st.cache(show_spinner=False)
     def get_section(self, section: str) -> str:
+        """Retrieves the contents of a markdown file and returns them as a string
+
+        Each article has the article text stored in markdown files. These are located
+        in `text/<article_name>/<section>.md
+
+        Args:
+            section (str): The name of the section to retrieve the markdown for
+
+        Returns:
+            str: The markdown for the required section
+        """
         with open(f"{self.text_path}/{section}.md", "r") as file:
             return file.read()
 
-    def get_summary(self):
+    def get_summary(self) -> alt.Chart:
+        """Create and return an altair chart showing the basic qualities of the handler's ML method
+
+        Returns:
+            alt.Chart: The attribute summary chart
+        """
         return (
             alt.Chart(self.summary)
             .mark_bar()
-            .encode(
-                y="Attribute:N",
-                x="Score:Q",
-                # color="Attribute",
-                tooltip=["Attribute", "Score"],
-            )
+            .encode(y="Attribute:N", x="Score:Q", tooltip=["Attribute", "Score"],)
             .properties(title="Decision Trees as a Machine Learning Model")
         )
 
     @abstractmethod
-    def render_playground(self):
-        pass
+    def render_playground(self) -> None:
+        """Generates and renders the interactive playground for the handler's ML method
+
+        The playground consists of two sections. The first involves choosing the parameters
+        of the model, while the second presents relevant plots and metrics.
+        """
 
     def render_eda(self, index=0):
+        """Generate and render the data selection and exploration section of the article
+
+        Each handler defines some datasets to choose from, and this function renders these options,
+        and displays some interactive graphs to explore the data.
+
+        Args:
+            index (int, optional): The index of the default dataset. Defaults to 0.
+        """
         # * Dataset Selection
         st.write("---")
         st.header("Data Selection and Exploration")
         dataset_name = st.selectbox("Choose a Dataset", self.data_options, index=index)
+
         with st.spinner("Loading dataset"):
             self.dataset, self.data = helper.load_process_data(dataset_name)
+
         self.train_x, self.test_x, self.train_y, self.test_y = train_test_split(
             self.data.drop("label", axis=1),
             self.data["label"],
@@ -86,24 +117,23 @@ class Handler(ABC):
         )
         st.altair_chart(class_chart, use_container_width=True)
 
-        feat = st.selectbox("Feature", self.data.drop("label", axis=1).columns)
+        feature = st.selectbox("Feature", self.data.drop("label", axis=1).columns)
 
         density_chart = (
             alt.Chart(self.data)
             .transform_density(
-                density=feat,
+                density=feature,
                 groupby=["label"],
                 steps=1000,
-                # counts=True,
-                extent=[min(self.data[feat]), max(self.data[feat])],
+                extent=[min(self.data[feature]), max(self.data[feature])],
             )
-            .mark_area()
+            .mark_area(opacity=0.8)
             .encode(
-                alt.X("value:Q", axis=alt.Axis(title=f"{feat}")),
+                alt.X("value:Q", axis=alt.Axis(title=f"{feature}")),
                 alt.Y("density:Q", axis=alt.Axis(title="Density")),
                 alt.Color("label:N"),
                 tooltip=["label", "density:Q"],
             )
-            .properties(title=f"Distribution of {feat} for each class")
+            .properties(title=f"Distribution of {feature} for each class")
         )
         st.altair_chart(density_chart, use_container_width=True)

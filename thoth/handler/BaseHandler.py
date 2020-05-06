@@ -78,7 +78,6 @@ class BaseHandler(ABC):
             index (int, optional): The index of the default dataset. Defaults to 0.
         """
         # * Dataset Selection
-        st.write("---")
         st.header("Data Selection and Exploration")
         dataset_name = st.selectbox("Choose a Dataset", self.data_options, index=index)
 
@@ -110,7 +109,7 @@ class BaseHandler(ABC):
             .encode(
                 y=alt.Y("label", axis=alt.Axis(title="Class")),
                 x=alt.X("count()", axis=alt.Axis(title="Count")),
-                color="label",
+                color=alt.Color("label", legend=None),
                 tooltip=["label", "count()"],
             )
             .properties(title="Class Distribution")
@@ -125,13 +124,16 @@ class BaseHandler(ABC):
                 density=feature,
                 groupby=["label"],
                 steps=1000,
-                extent=[min(self.data[feature]), max(self.data[feature])],
+                extent=[min(self.data[feature]) - 0.5, max(self.data[feature]) + 0.5],
             )
-            .mark_area(opacity=0.8)
+            .mark_area()
             .encode(
                 alt.X("value:Q", axis=alt.Axis(title=f"{feature}")),
                 alt.Y("density:Q", axis=alt.Axis(title="Density")),
-                alt.Color("label:N"),
+                color=alt.Color(
+                    "label", legend=alt.Legend(orient="bottom", title="Class")
+                ),
+                opacity=alt.OpacityValue(0.8),
                 tooltip=["label", "density:Q"],
             )
             .properties(title=f"Distribution of {feature} for each class")

@@ -17,7 +17,7 @@ class DTHandler(BaseHandler):
         self.summary = pd.DataFrame(
             {
                 "Attribute": ["Power", "Interpretability", "Simplicity"],
-                "Score": [3, 5, 4],
+                "Score": [2, 5, 4],
             },
         )
 
@@ -28,25 +28,34 @@ class DTHandler(BaseHandler):
         st.header("Model Playground")
         st.subheader("Parameter Selection")
         params = {"random_state": SEED}
-        params["criterion"] = st.selectbox("Criterion", ["gini", "entropy"])
-        params["max_depth"] = st.slider("Max Depth", min_value=1, max_value=20, value=5)
-        params["min_impurity_decrease"] = st.slider(
-            "Min Impurity Decrease",
-            min_value=0.0,
-            max_value=0.5,
-            step=0.001,
-            format="%.3f",
+        params["criterion"] = st.selectbox(
+            "Splitting criterion:", ["gini", "entropy"], index=1
+        )
+        params["max_depth"] = st.slider(
+            "Maximum tree depth:", min_value=1, max_value=10, value=5
+        )
+        params["min_samples_split"] = st.slider(
+            "Minimum number of samples required to split",
+            min_value=2,
+            max_value=len(self.train_x),
+            step=1,
         )
 
         if st.checkbox("Show advanced options"):
-            params["splitter"] = st.selectbox("Splitter", ["best", "random"])
-            if st.checkbox("Balance classes"):
-                params["class_weight"] = "balanced"
-            params["min_samples_split"] = st.slider(
-                "Min Samples per Split", min_value=0.01, max_value=1.0, step=0.01
+            params["splitter"] = st.selectbox(
+                "How to select feature to split by:", ["best", "random"]
             )
+            params["min_impurity_decrease"] = st.slider(
+                "Minimum impurity decrease required to perform a split:",
+                min_value=0.0,
+                max_value=0.5,
+                step=0.001,
+                format="%.3f",
+            )
+            if st.checkbox("Balance classes inversely proportional to their frequency"):
+                params["class_weight"] = "balanced"
             params["max_features"] = st.slider(
-                "Number of Features to Consider at Each Split",
+                "Number of features to consider at each split:",
                 min_value=1,
                 max_value=len(self.dataset["feature_names"]),
                 value=len(self.dataset["feature_names"]),

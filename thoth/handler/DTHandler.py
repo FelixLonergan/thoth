@@ -1,14 +1,10 @@
-from thoth.handler.generic import Handler
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-import graphviz
-import os
-from PIL import Image
-from thoth.helper import load_process_data, train_model, get_metrics
-import streamlit as st
-from sklearn.model_selection import train_test_split
 import pandas as pd
+import streamlit as st
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
 
-SEED = 42
+import thoth.helper as helper
+from thoth.handler.generic import Handler
+from thoth import SEED
 
 
 class DTHandler(Handler):
@@ -22,16 +18,19 @@ class DTHandler(Handler):
             },
         )
 
+    def render_eda(self, index=0):
+        return super().render_eda(index=self.data_options.index("Iris"))
+
     def render_playground(self):
         st.header("Model Playground")
         st.subheader("Parameter Selection")
         params = {"random_state": SEED}
         params["criterion"] = st.selectbox("Criterion", ["gini", "entropy"])
-        params["max_depth"] = st.slider("Max Depth", min_value=1, max_value=30, value=5)
+        params["max_depth"] = st.slider("Max Depth", min_value=1, max_value=20, value=5)
         params["min_impurity_decrease"] = st.slider(
             "Min Impurity Decrease",
             min_value=0.0,
-            max_value=0.2,
+            max_value=0.5,
             step=0.001,
             format="%.3f",
         )
@@ -50,12 +49,14 @@ class DTHandler(Handler):
                 value=len(self.dataset["feature_names"]),
             )
 
-        dt = train_model(DecisionTreeClassifier, params, self.train_x, self.train_y)
+        dt = helper.train_model(
+            DecisionTreeClassifier, params, self.train_x, self.train_y
+        )
 
-        train_metrics = get_metrics(dt, self.train_x, self.train_y).rename(
+        train_metrics = helper.get_metrics(dt, self.train_x, self.train_y).rename(
             index={0: "Train"}
         )
-        test_metrics = get_metrics(dt, self.test_x, self.test_y).rename(
+        test_metrics = helper.get_metrics(dt, self.test_x, self.test_y).rename(
             index={0: "Test"}
         )
         st.subheader("Performance Metrics")
@@ -63,7 +64,9 @@ class DTHandler(Handler):
 
         st.subheader("View Tree")
         with st.spinner("Plotting tree..."):
-            st.image(self.tree_plot(dt, self.dataset), use_column_width=True)
+            st.graphviz_chart(
+                self.tree_plot(dt, self.dataset), use_container_width=True
+            )
 
         st.subheader("Tree Parameters")
         st.write(dt.get_params())
@@ -71,7 +74,6 @@ class DTHandler(Handler):
     @staticmethod
     @st.cache(show_spinner=False)
     def tree_plot(dt: DecisionTreeClassifier, dataset: dict):
-        # plt.plot(10, 10)
         dot_data = export_graphviz(
             dt,
             out_file=None,
@@ -80,9 +82,4 @@ class DTHandler(Handler):
             class_names=dataset["target_names"],
             feature_names=dataset["feature_names"],
         )
-        graph = graphviz.Source(dot_data)
-        graph.render(filename="temp", format="png")
-        img = Image.open("temp.png")
-        os.remove("temp.png")
-        os.remove("temp")
-        return img
+        return dot_data

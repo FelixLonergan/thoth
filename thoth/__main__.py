@@ -1,28 +1,12 @@
-import os
-
-import graphviz
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 import streamlit as st
-from PIL import Image
-from sklearn.datasets import load_breast_cancer, load_digits, load_iris, load_wine
-from sklearn.metrics import (
-    classification_report,
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, export_graphviz, plot_tree
-import altair as alt
-from thoth.handler.generic import Handler
-from thoth.handler.DTHandler import DTHandler
-from thoth.helper import *
+from thoth.helper import get_handler
 
-st.title("Decision Trees")
-handler = DTHandler()
+article = st.sidebar.selectbox(
+    "Choose a Machine Learning method", ["Decision Trees"], index=0,
+)
+
+st.title(article)
+handler = get_handler(article)
 st.write(handler.get_section("intro"))
 st.altair_chart(handler.get_summary(), use_container_width=True)
 

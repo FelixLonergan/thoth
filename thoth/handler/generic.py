@@ -1,11 +1,12 @@
 import os.path
 from abc import ABC, abstractmethod
+
+import altair as alt
 import streamlit as st
 from sklearn.model_selection import train_test_split
-from thoth.helper import load_process_data
-import altair as alt
 
-SEED = 42
+import thoth.helper as helper
+from thoth import SEED
 
 
 class Handler(ABC):
@@ -26,8 +27,8 @@ class Handler(ABC):
 
     @st.cache(show_spinner=False)
     def get_section(self, section: str) -> str:
-        with open(f"{self.text_path}/{section}.md", "r") as f:
-            return f.read()
+        with open(f"{self.text_path}/{section}.md", "r") as file:
+            return file.read()
 
     def get_summary(self):
         return (
@@ -46,12 +47,13 @@ class Handler(ABC):
     def render_playground(self):
         pass
 
-    def render_eda(self):
+    def render_eda(self, index=0):
         # * Dataset Selection
         st.write("---")
         st.header("Data Selection and Exploration")
-        dataset_name = st.selectbox("Choose a Dataset", self.data_options)
-        self.dataset, self.data = load_process_data(dataset_name)
+        dataset_name = st.selectbox("Choose a Dataset", self.data_options, index=index)
+        with st.spinner("Loading dataset"):
+            self.dataset, self.data = helper.load_process_data(dataset_name)
         self.train_x, self.test_x, self.train_y, self.test_y = train_test_split(
             self.data.drop("label", axis=1),
             self.data["label"],
@@ -63,7 +65,8 @@ class Handler(ABC):
 
         # Optionally display dataset information
         if st.checkbox("Display dataset information"):
-            st.write(self.dataset["DESCR"].split(":", 1)[1])
+            st.write(self.dataset["DESCR"])
+            st.write("---")
         st.write(self.data)
 
         # * EDA
@@ -84,6 +87,7 @@ class Handler(ABC):
         st.altair_chart(class_chart, use_container_width=True)
 
         feat = st.selectbox("Feature", self.data.drop("label", axis=1).columns)
+
         density_chart = (
             alt.Chart(self.data)
             .transform_density(
@@ -95,7 +99,7 @@ class Handler(ABC):
             )
             .mark_area()
             .encode(
-                alt.X(f"value:Q", axis=alt.Axis(title=f"{feat}")),
+                alt.X("value:Q", axis=alt.Axis(title=f"{feat}")),
                 alt.Y("density:Q", axis=alt.Axis(title="Density")),
                 alt.Color("label:N"),
                 tooltip=["label", "density:Q"],

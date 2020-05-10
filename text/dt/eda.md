@@ -1,0 +1,1 @@
+In this section you will select one of 3 classification datasets. You will then be able to able to investigate some properties of the  dataset using the interactive charts. In particular, see if you can identify any features that seem to separate the classes well. These will likely be the features near the top of the decision tree!

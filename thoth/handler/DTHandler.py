@@ -26,6 +26,7 @@ class DTHandler(BaseHandler):
 
     def render_playground(self):
         st.header("Model Playground")
+        st.write(self.get_section("playground"))
         st.subheader("Parameter Selection")
         params = {"random_state": SEED}
         params["criterion"] = st.selectbox(
@@ -46,7 +47,7 @@ class DTHandler(BaseHandler):
                 "How to select feature to split by:", ["best", "random"]
             )
             params["min_impurity_decrease"] = st.slider(
-                "Minimum impurity decrease required to perform a split:",
+                f"Minimum decrease in {params['criterion']} required to perform a split:",
                 min_value=0.0,
                 max_value=0.5,
                 step=0.001,
@@ -55,7 +56,7 @@ class DTHandler(BaseHandler):
             if st.checkbox("Balance classes inversely proportional to their frequency"):
                 params["class_weight"] = "balanced"
             params["max_features"] = st.slider(
-                "Number of features to consider at each split:",
+                "Number of features to consider at each split (randomly selected at each branch):",
                 min_value=1,
                 max_value=len(self.dataset["feature_names"]),
                 value=len(self.dataset["feature_names"]),

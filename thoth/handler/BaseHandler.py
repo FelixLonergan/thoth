@@ -79,6 +79,7 @@ class BaseHandler(ABC):
         """
         # * Dataset Selection
         st.header("Data Selection and Exploration")
+        st.write(self.get_section("eda"))
         dataset_name = st.selectbox("Choose a Dataset", self.data_options, index=index)
 
         with st.spinner("Loading dataset"):

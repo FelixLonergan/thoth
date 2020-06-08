@@ -36,7 +36,7 @@ class BaseHandler(ABC):
         """Retrieves the contents of a markdown file and returns them as a string
 
         Each article has the article text stored in markdown files. These are located
-        in `text/<article_name>/<section>.md
+        in `text/<article_name>/<section>.md`
 
         Args:
             section (str): The name of the section to retrieve the markdown for

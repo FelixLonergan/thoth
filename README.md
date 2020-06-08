@@ -10,10 +10,10 @@ To get started with Thoth, first clone the repository using
 git clone https://github.com/FelixLonergan/Thoth.git
 ```
 
-Package management for this project is handled using the excellent [Poetry](https://python-poetry.org/) library which can be installed from PyPi with the following command.
+Package management for this project is handled using the excellent [Poetry](https://python-poetry.org/) library which can be installed with the following command.
 
 ```bash
-pip install --user poetry
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ```
 
 Once you have the repository cloned and poetry installed you will need to install the dependencies of Thoth. You can do this by navigating to the Thoth directory and running

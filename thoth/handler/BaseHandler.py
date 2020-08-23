@@ -56,8 +56,14 @@ class BaseHandler(ABC):
         return (
             alt.Chart(self.summary)
             .mark_bar()
-            .encode(y="Attribute:N", x="Score:Q", tooltip=["Attribute", "Score"],)
+            .encode(
+                alt.X("Score:Q", scale=alt.Scale(domain=(0, 5))),
+                y="Attribute:N",
+                tooltip=["Attribute", "Score"],
+                color="Attribute",
+            )
             .properties(title="Decision Trees as a Machine Learning Model")
+            .configure_axis(grid=False, tickCount=5)
         )
 
     @abstractmethod
@@ -95,9 +101,11 @@ class BaseHandler(ABC):
         )
 
         # Optionally display dataset information
-        if st.checkbox("Display dataset information"):
-            st.write(self.dataset["DESCR"])
-            st.write("---")
+        if self.dataset.get("DESCR"):
+            if st.checkbox("Display dataset information"):
+                st.write(self.dataset["DESCR"])
+                st.write("---")
+
         st.write(self.data)
 
         # * EDA
@@ -108,9 +116,9 @@ class BaseHandler(ABC):
             alt.Chart(self.data)
             .mark_bar()
             .encode(
-                y=alt.Y("label", axis=alt.Axis(title="Class")),
+                y=alt.Y("label:N", axis=alt.Axis(title="Class")),
                 x=alt.X("count()", axis=alt.Axis(title="Count")),
-                color=alt.Color("label", legend=None),
+                color=alt.Color("label:N", legend=None),
                 tooltip=["label", "count()"],
             )
             .properties(title="Class Distribution")
@@ -125,14 +133,14 @@ class BaseHandler(ABC):
                 density=feature,
                 groupby=["label"],
                 steps=1000,
-                extent=[min(self.data[feature]) - 0.5, max(self.data[feature]) + 0.5],
+                extent=[0.9 * min(self.data[feature]), 1.1 * max(self.data[feature])],
             )
             .mark_area()
             .encode(
                 alt.X("value:Q", axis=alt.Axis(title=f"{feature}")),
                 alt.Y("density:Q", axis=alt.Axis(title="Density")),
                 color=alt.Color(
-                    "label", legend=alt.Legend(orient="bottom", title="Class")
+                    "label:N", legend=alt.Legend(orient="bottom", title="Class")
                 ),
                 opacity=alt.OpacityValue(0.8),
                 tooltip=["label", "density:Q"],

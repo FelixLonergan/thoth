@@ -17,7 +17,7 @@ class DTHandler(BaseHandler):
         self.summary = pd.DataFrame(
             {
                 "Attribute": ["Power", "Interpretability", "Simplicity"],
-                "Score": [2, 5, 4],
+                "Score": [2.5, 5, 4],
             },
         )
 

@@ -2,8 +2,11 @@ import streamlit as st
 
 from thoth.helper import get_handler
 
+st.sidebar.markdown("# Thoth")
 article = st.sidebar.selectbox(
-    "Choose a Machine Learning method", ["Decision Trees"], index=0,
+    "Choose a Machine Learning method",
+    ["Decision Trees", "k-Nearest Neighbours"],
+    index=0,
 )
 show_text = st.sidebar.checkbox("Show article text", value=True)
 st.title(article)

@@ -3,14 +3,24 @@ from typing import Tuple, Type
 import numpy as np
 import pandas as pd
 import streamlit as st
-from sklearn.datasets import load_breast_cancer, load_iris, load_wine
-from sklearn.metrics import f1_score, precision_score, recall_score
+
+from thoth.dataloaders import (
+    get_circles,
+    get_moons,
+    get_breast_cancer,
+    get_iris,
+    get_wine,
+    get_blobs,
+    get_classification,
+)
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 
 from thoth.handler.BaseHandler import BaseHandler
 from thoth.handler.DTHandler import DTHandler
+from thoth.handler.KNNHandler import KNNHandler
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def train_model(model, params: dict, train_x: pd.DataFrame, train_y: pd.Series):
     """Initialise and train a given model with the provided parameters and data
 
@@ -37,22 +47,16 @@ def load_process_data(dataset_name: str) -> Tuple[dict, pd.DataFrame]:
         Tuple[dict, pd.DataFrame]: A tuple of the dataset metadata dict and the data
     """
     dataloaders = {
-        "Breast Cancer": load_breast_cancer,
-        "Iris": load_iris,
-        "Wine": load_wine,
+        "Breast Cancer": get_breast_cancer,
+        "Iris": get_iris,
+        "Wine": get_wine,
+        "Moons": get_moons,
+        "Blobs": get_blobs,
+        "Circles": get_circles,
+        "Classification": get_classification,
     }
     dataloader = dataloaders.get(dataset_name)
-    dataset = dataloader()
-    dataset["DESCR"] = dataset["DESCR"].split(":", 1)[1]
-    data = pd.DataFrame(dataset.pop("data"), columns=dataset["feature_names"])
-    labels = pd.Series(dataset.pop("target")).map(
-        {i: name for i, name in enumerate(dataset["target_names"])}
-    )
-    data = pd.DataFrame(labels, columns=["label"]).join(data)
-    return (
-        dataset,
-        data,
-    )
+    return dataloader()
 
 
 @st.cache
@@ -71,9 +75,10 @@ def get_metrics(clf, x: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
     """
     average = "macro" if len(np.unique(y)) > 2 else "micro"
     metrics = {
+        "Accuracy": accuracy_score(y, clf.predict(x)),
+        "F1": f1_score(y, clf.predict(x), average=average),
         "Precision": precision_score(y, clf.predict(x), average=average),
         "Recall": recall_score(y, clf.predict(x), average=average),
-        "F1": f1_score(y, clf.predict(x), average=average),
     }
     return pd.DataFrame(metrics, index=[0])
 
@@ -87,5 +92,5 @@ def get_handler(handler_name: str) -> Type[BaseHandler]:
     Returns:
         Type[BaseHandler]: The appropriate page handler
     """
-    handlers = {"Decision Tree": DTHandler()}
+    handlers = {"Decision Tree": DTHandler(), "k-Nearest Neighbours": KNNHandler()}
     return handlers.get(handler_name, DTHandler())

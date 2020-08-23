@@ -43,14 +43,22 @@ class KNNHandler(BaseHandler):
         st.header("Model Playground")
         st.write(self.get_section("playground"))
         st.subheader("Parameter Selection")
+
         params = {}
         params["n_neighbors"] = st.number_input(
             "Number of Neighbours (k):", value=5, min_value=1
         )
+        params["metric"] = st.selectbox(
+            "Distance Metric:", ["euclidean", "manhattan", "chebyshev", "minkowski"]
+        )
+        if params["metric"] == "minkowski":
+            params["p"] = st.number_input("Minkowski Power (p):", value=3, min_value=1)
 
-        params["weights"] = st.selectbox("Weight of Neighbour", ["uniform", "distance"])
-        knn = copy.deepcopy(
-            helper.train_model(KNeighborsClassifier, params, self.train_x, self.train_y)
+        params["weights"] = st.selectbox(
+            "Weight of Neighbour:", ["uniform", "distance"]
+        )
+        knn = helper.train_model(
+            KNeighborsClassifier, params, self.train_x, self.train_y
         )
 
         train_metrics = helper.get_metrics(knn, self.train_x, self.train_y).rename(

@@ -1,0 +1,1 @@
+In this section you will select one of a number of simple classification datasets. All the datasets provided are 2-dimensional, as the k-NN algorithm is a very visually interpretable algorithm. You will then be able to able to investigate some properties of the dataset using the interactive charts.

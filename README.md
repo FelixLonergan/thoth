@@ -19,7 +19,7 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 Once you have the repository cloned and poetry installed you will need to install the dependencies of Thoth. You can do this by navigating to the Thoth directory and running
 
 ```bash
-poetry install
+poetry install --no-dev
 ```
 
 By default poetry will create a new virtual environment and install all the required dependencies there. If you are already inside a virtual environment when you run `poetry install` the dependencies will be installed there (see the [Poetry documentation](https://python-poetry.org/docs/) for more information on how Poetry handles virtual environments).
@@ -29,3 +29,9 @@ Once you are inside a virtual environment with all the appropriate dependencies 
 ```bash
 streamlit run run.py
 ```
+
+## Examples
+### Looking at data
+![eda](https://i.imgur.com/7Pv7xP7.png)
+### Playing with a model
+![tree](https://i.imgur.com/NoV1T4t.png)

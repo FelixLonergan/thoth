@@ -6,21 +6,22 @@ authors = ["Felix <felix.lonergan@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-streamlit = "^0.58.0"
-pandas = "^1.0.3"
-numpy = "^1.18.3"
-scikit-learn = "^0.22.2"
-matplotlib = "^3.2.1"
-seaborn = "^0.10.1"
-graphviz = "^0.14"
+streamlit = "~=0.58"
+pandas = "~=1.0"
+numpy = "~=1.18"
+scikit-learn = "~=0.22"
+matplotlib = "~=3.2"
+seaborn = "~=0.10"
+graphviz = "~=0.14"
+Cython = "~=0.28"
+
+[tool.poetry.dev-dependencies]
 black = "^19.10b0"
 pylint = "^2.5.2"
 sphinx = "^3.0.4"
 sphinxcontrib-napoleon = "^0.7"
 recommonmark = "^0.6.0"
 sphinx-rtd-theme = "^0.4.3"
-
-[tool.poetry.dev-dependencies]
 pytest = "^5.2"
 
 [build-system]

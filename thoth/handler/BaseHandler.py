@@ -56,7 +56,11 @@ class BaseHandler(ABC):
         return (
             alt.Chart(self.summary)
             .mark_bar()
-            .encode(y="Attribute:N", x="Score:Q", tooltip=["Attribute", "Score"],)
+            .encode(
+                y="Attribute:N",
+                x="Score:Q",
+                tooltip=["Attribute", "Score"],
+            )
             .properties(title="Decision Trees as a Machine Learning Model")
         )
 
@@ -119,13 +123,17 @@ class BaseHandler(ABC):
 
         feature = st.selectbox("Feature", self.data.drop("label", axis=1).columns)
 
+        buffer = 0.1 * (max(self.data[feature]) - min(self.data[feature]))
         density_chart = (
             alt.Chart(self.data)
             .transform_density(
                 density=feature,
                 groupby=["label"],
                 steps=1000,
-                extent=[min(self.data[feature]) - 0.5, max(self.data[feature]) + 0.5],
+                extent=[
+                    min(self.data[feature]) - buffer,
+                    max(self.data[feature]) + buffer,
+                ],
             )
             .mark_area()
             .encode(

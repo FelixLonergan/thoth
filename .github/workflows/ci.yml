@@ -1,7 +1,7 @@
 name: CI
-on: [push]
+on: push
 jobs:
-  ci:
+  CI:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python

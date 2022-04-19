@@ -1,8 +1,13 @@
 [tool.poetry]
-name = "thoth"
+name = "thoth-ml"
 version = "0.1.0"
 description = "Interactive playground for machine learning"
 authors = ["Felix Lonergan Corti <felix.lonergan@gmail.com>"]
+homepage = "https://thoth-ml.readthedocs.io/en/latest/"
+documentation = "https://thoth-ml.readthedocs.io/en/latest/"
+repository = "https://github.com/FelixLonergan/thoth"
+readme = "README.md"
+packages = [ {include = "thoth"} ]
 
 [tool.poetry.scripts]
 thoth = "thoth.cli:thoth"

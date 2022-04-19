@@ -39,7 +39,9 @@ class BaseHandler(ABC):
         self.test_x: np.ndarray
         self.train_y: np.ndarray
         self.test_y: np.ndarray
-        self.text_path = Path(__file__).parent.parent.joinpath("text", self.NAME)
+        self.text_path = Path(__file__).parent.parent.joinpath(
+            "static", "text", self.NAME
+        )
 
     def __init_subclass__(cls) -> None:
         if not inspect.isabstract(cls):

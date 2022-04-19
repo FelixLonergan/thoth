@@ -27,6 +27,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: pypa/cibuildwheel@v2.4.0
+      env:
+        CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7,<4"
     - name: Upload wheels
       uses: actions/upload-artifact@v3
       with:

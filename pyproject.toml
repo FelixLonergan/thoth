@@ -61,6 +61,3 @@ disallow_incomplete_defs = true
 [[tool.mypy.overrides]]
 module = ["pandas.*", "sklearn.*", "altair.*", "PIL.*"]
 ignore_missing_imports = true
-
-[tool.cibuildwheel]
-requires-python = ">=3.7,<4"

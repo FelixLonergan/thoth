@@ -1,4 +1,5 @@
 # Thoth 𓅝
+![CI](https://github.com/FelixLonergan/thoth/workflows/CI/badge.svg) [![Documentation Status](https://readthedocs.org/projects/thoth-ml/badge/?version=latest)](https://thoth-ml.readthedocs.io/en/latest/?badge=latest)
 
 Thoth is designed to be an interactive explanation of a number of common Machine Learning methods. Built upon [Streamlit](https://www.streamlit.io/), Thoth offers an intuitive way to understand and experiment with fundamental AI tools and methods.
 

@@ -1,4 +1,5 @@
-from typing import Tuple, Type
+import sys
+from typing import Any, Dict, Tuple, Type, TypeVar, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -6,13 +7,44 @@ import streamlit as st
 from sklearn.datasets import load_breast_cancer, load_iris, load_wine
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-from thoth.handler.BaseHandler import BaseHandler
-from thoth.handler.DTHandler import DTHandler
+# Protocol is only available in the typing module for python 3.8+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
+
+
+class ScikitModel(Protocol):
+    """A protocol for compatible scikit-learn models
+
+    See the scikit-learn documentation for details
+    [here](https://scikit-learn.org/stable/developers/develop.html#apis-of-scikit-learn-objects)
+    """
+
+    def fit(
+        self: "ScikitModelT",
+        X: Union[pd.DataFrame, np.ndarray],
+        y: Union[pd.Series, pd.DataFrame, np.ndarray],
+    ) -> "ScikitModelT":
+        """Fits the model to a dataset"""
+        ...
+
+    def predict(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
+        """Predict with the model on a dataset"""
+        ...
+
+
+ScikitModelT = TypeVar("ScikitModelT", bound=ScikitModel)
 
 
 @st.cache
-def train_model(model, params: dict, train_x: pd.DataFrame, train_y: pd.Series):
-    """Initialise and train a given model with the provided parameters and data
+def train_model(
+    model: Type[ScikitModelT],
+    params: Dict[str, Any],
+    train_x: Union[pd.DataFrame, np.ndarray],
+    train_y: Union[pd.Series, np.ndarray],
+) -> ScikitModelT:
+    """Initialise and train a given scikit-learn model with the provided parameters and data
 
     Args:
         model: The model architecture to use
@@ -23,7 +55,7 @@ def train_model(model, params: dict, train_x: pd.DataFrame, train_y: pd.Series):
     Returns:
         model: The trained model
     """
-    return model(**params).fit(train_x, train_y)
+    return model(**params).fit(train_x, train_y)  # type: ignore
 
 
 @st.cache(show_spinner=False)
@@ -41,12 +73,12 @@ def load_process_data(dataset_name: str) -> Tuple[dict, pd.DataFrame]:
         "Iris": load_iris,
         "Wine": load_wine,
     }
-    dataloader = dataloaders.get(dataset_name)
-    dataset = dataloader()
+    dataloader = dataloaders[dataset_name]
+    dataset = cast(Dict[str, Any], dataloader())
     dataset["DESCR"] = dataset["DESCR"].split(":", 1)[1]
     data = pd.DataFrame(dataset.pop("data"), columns=dataset["feature_names"])
     labels = pd.Series(dataset.pop("target")).map(
-        {i: name for i, name in enumerate(dataset["target_names"])}
+        dict(enumerate(dataset["target_names"]))
     )
     data = pd.DataFrame(labels, columns=["label"]).join(data)
     return (
@@ -56,8 +88,12 @@ def load_process_data(dataset_name: str) -> Tuple[dict, pd.DataFrame]:
 
 
 @st.cache
-def get_metrics(clf, x: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
-    """Evaluate the performance of a classifier on a given dataset
+def get_metrics(
+    clf: ScikitModel,
+    x: Union[pd.DataFrame, np.ndarray],
+    y: Union[pd.Series, np.ndarray],
+) -> pd.DataFrame:
+    """Evaluate the performance of a scikit-learn predictor on a given dataset
 
     Args:
         clf: The trained classifier to evaluate
@@ -76,16 +112,3 @@ def get_metrics(clf, x: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
         "F1": f1_score(y, clf.predict(x), average=average),
     }
     return pd.DataFrame(metrics, index=[0])
-
-
-def get_handler(handler_name: str) -> Type[BaseHandler]:
-    """Returns the appropriate Handler based off the name of the article
-
-    Args:
-        handler_name (str): The name of the handler to return
-
-    Returns:
-        Type[BaseHandler]: The appropriate page handler
-    """
-    handlers = {"Decision Tree": DTHandler()}
-    return handlers.get(handler_name, DTHandler())

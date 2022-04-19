@@ -1,18 +1,34 @@
+from pathlib import Path
+
 import streamlit as st
+from PIL import Image
 
-from thoth.helper import get_handler
+from .handler import HANDLER_REGISTRY
 
-article = st.sidebar.selectbox(
-    "Choose a Machine Learning method", ["Decision Trees"], index=0,
-)
-show_text = st.sidebar.checkbox("Show article text", value=True)
-st.title(article)
-handler = get_handler(article)
 
-if show_text:
-    st.altair_chart(handler.get_summary(), use_container_width=True)
-    st.write(handler.get_section("intro"), unsafe_allow_html=True)
-    st.write("---")
-handler.render_eda()
+def main() -> None:
+    """Main entry point for the Thoth application that handles overall page structure"""
+    favicon_path = Path(__file__).parent.joinpath("static", "favicon.ico")
+    with Image.open(favicon_path) as img:
+        st.set_page_config(
+            page_title="Thoth",
+            page_icon=img,
+            menu_items={
+                "Report a bug": "https://github.com/FelixLonergan/thoth/issues",
+            },
+        )
 
-handler.render_playground()
+    st.sidebar.title("Thoth")
+    article = st.sidebar.selectbox(
+        "Choose a Machine Learning method",
+        list(HANDLER_REGISTRY.keys()),
+        index=0,
+    )
+
+    handler_cls = HANDLER_REGISTRY[article]
+    handler = handler_cls()
+    handler.render_page()
+
+
+if __name__ == "__main__":
+    main()

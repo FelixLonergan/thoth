@@ -8,7 +8,7 @@ authors = ["Felix Lonergan Corti <felix.lonergan@gmail.com>"]
 thoth = "thoth.cli:thoth"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.7,<3.11"
 streamlit = "~=1.8"
 pandas = "~=1.3.4"
 scikit-learn = "~=1.0.1"
@@ -43,5 +43,5 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
 [[tool.mypy.overrides]]
-module = ["pandas.*", "sklearn.*", "altair.*"]
+module = ["pandas.*", "sklearn.*", "altair.*", "PIL.*"]
 ignore_missing_imports = true

@@ -1,9 +1,18 @@
-from importlib.metadata import PackageNotFoundError, version
-from typing import Optional
+import sys
+from typing import TYPE_CHECKING, Any, Optional
 
-try:
-    __version__: Optional[str] = version("thoth")
-except PackageNotFoundError:
-    __version__ = None
+# importlib is only available in python 3.8+
+if sys.version_info >= (3, 8):
+    from importlib import metadata
+else:
+    metadata: Any = None
+
+if metadata is None:
+    __version__: Optional[str] = None
+else:
+    try:
+        __version__ = metadata.version("thoth")
+    except metadata.PackageNotFoundError:
+        __version__ = None
 
 SEED = 42

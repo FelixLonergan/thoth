@@ -1,4 +1,12 @@
-from typing import Any, Dict, Protocol, Tuple, Type, TypeVar, Union, cast
+import sys
+from typing import Any, Dict, Tuple, Type, TypeVar, Union, cast
+
+# Protocol is only available in the typing module for python 3.8+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
+
 
 import numpy as np
 import pandas as pd
@@ -13,9 +21,6 @@ class ScikitModel(Protocol):
     See the scikit-learn documentation for details
     [here](https://scikit-learn.org/stable/developers/develop.html#apis-of-scikit-learn-objects)
     """
-
-    # def __init__(self, **kwargs: Any) -> None:
-    #     ...
 
     def fit(
         self: "ScikitModelT",

@@ -1,4 +1,4 @@
-site_name: Thoth
+site_name: Thoth | Documentation
 repo_url: https://github.com/FelixLonergan/thoth
 repo_name: FelixLonergan/thoth
 
@@ -17,8 +17,8 @@ nav:
 
 theme:
   name: material
-  logo: static/thoth_white.png
-  favicon: static/thoth_white.png
+  logo: static/thoth.png
+  favicon: static/favicon.ico
   palette:
     - scheme: slate
       media: "(prefers-color-scheme: dark)"

@@ -1,34 +1,47 @@
+from typing import Dict, Optional, Union
+
 import pandas as pd
 import streamlit as st
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 
-import thoth.helper as helper
 from thoth import SEED
-from thoth.handler.BaseHandler import BaseHandler
+
+from .. import utils
+from .base_handler import BaseHandler
 
 
 class DTHandler(BaseHandler):
-    """Page handler for the Decision Tree article (short name 'dt')
-    """
+    """Page handler for the Decision Tree article (short name 'dt')"""
 
-    def __init__(self):
-        super().__init__("dt")
-        self.data_options = ["Breast Cancer", "Iris", "Wine"]
-        self.summary = pd.DataFrame(
-            {
-                "Attribute": ["Power", "Interpretability", "Simplicity"],
-                "Score": [2, 5, 4],
-            },
-        )
+    ARTICLE_TITLE = "Decision Trees"
+    DATASETS = ["Breast Cancer", "Iris", "Wine"]
+    SUMMARY = pd.DataFrame(
+        {
+            "Attribute": ["Power", "Interpretability", "Simplicity"],
+            "Score": [2, 5, 4],
+        },
+    )
+    NAME = "dt"
 
-    def render_eda(self, index=0):
-        return super().render_eda(index=self.data_options.index("Iris"))
+    def render_eda(self, dataset_index: Optional[int] = None) -> None:
+        if dataset_index is None:
+            dataset_index = self.DATASETS.index("Iris")
+        return super().render_eda(dataset_index=dataset_index)
 
-    def render_playground(self):
+    def render_playground(self) -> None:
         st.header("Model Playground")
         st.write(self.get_section("playground"))
         st.subheader("Parameter Selection")
-        params = {"random_state": SEED}
+
+        if any(
+            data is None
+            for data in (self.train_x, self.train_y, self.test_x, self.test_y)
+        ):
+            raise ValueError(
+                "A dataset must be chosen before the playground can be rendered!"
+            )
+
+        params: Dict[str, Union[str, float, int]] = {"random_state": SEED}
         params["criterion"] = st.selectbox(
             "Splitting criterion:", ["gini", "entropy"], index=1
         )
@@ -42,7 +55,7 @@ class DTHandler(BaseHandler):
             step=1,
         )
 
-        if st.checkbox("Show advanced options"):
+        with st.expander("Advanced parameters"):
             params["splitter"] = st.selectbox(
                 "How to select feature to split by:", ["best", "random"]
             )
@@ -62,22 +75,26 @@ class DTHandler(BaseHandler):
                 value=len(self.dataset["feature_names"]),
             )
 
-        dt = helper.train_model(
+        decision_tree = utils.train_model(
             DecisionTreeClassifier, params, self.train_x, self.train_y
         )
-        train_metrics = helper.get_metrics(dt, self.train_x, self.train_y).rename(
-            index={0: "Train"}
+
+        train_metrics = utils.get_metrics(decision_tree, self.train_x, self.train_y)
+        train_metrics = train_metrics.set_axis(
+            ["Train"] * len(train_metrics), axis="index"
         )
-        test_metrics = helper.get_metrics(dt, self.test_x, self.test_y).rename(
-            index={0: "Test"}
+        test_metrics = utils.get_metrics(decision_tree, self.test_x, self.test_y)
+        test_metrics = train_metrics.set_axis(
+            ["Test"] * len(test_metrics), axis="index"
         )
+
         st.subheader("Performance Metrics")
         st.write(train_metrics.append(test_metrics))
 
         st.subheader("View Tree")
         with st.spinner("Plotting tree"):
             tree_dot = export_graphviz(
-                dt,
+                decision_tree,
                 out_file=None,
                 rounded=True,
                 filled=True,
@@ -87,4 +104,4 @@ class DTHandler(BaseHandler):
             st.graphviz_chart(tree_dot, use_container_width=True)
 
         st.subheader("Tree Parameters")
-        st.write(dt.get_params())
+        st.write(decision_tree.get_params())

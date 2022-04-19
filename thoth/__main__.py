@@ -1,29 +1,20 @@
 import streamlit as st
 
-from thoth.helper import get_handler
-
-ARTICLES = ["Decision Trees"]
+from .handler import HANDLER_REGISTRY
 
 
-def main():
+def main() -> None:
     """Main entry point for the Thoth application that handles overall page structure"""
     st.sidebar.title("Thoth")
     article = st.sidebar.selectbox(
         "Choose a Machine Learning method",
-        ARTICLES,
+        list(HANDLER_REGISTRY.keys()),
         index=0,
     )
 
-    st.title(article)
-    handler = get_handler(article)
-
-    st.altair_chart(handler.get_summary(), use_container_width=True)
-    st.write(handler.get_section("intro"), unsafe_allow_html=True)
-
-    st.write("---")
-
-    handler.render_eda()
-    handler.render_playground()
+    handler_cls = HANDLER_REGISTRY[article]
+    handler = handler_cls()
+    handler.render_page()
 
 
 if __name__ == "__main__":

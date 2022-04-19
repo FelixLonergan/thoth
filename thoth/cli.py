@@ -6,7 +6,7 @@ import click
 
 
 @click.command()
-def thoth():
+def thoth() -> None:
     """Runs the Thoth application"""
     run_path = Path(__file__).parent.joinpath("thoth_runner.py")
     args = [sys.executable, "-m", "streamlit", "run", str(run_path)]

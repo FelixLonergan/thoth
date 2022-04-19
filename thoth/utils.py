@@ -1,18 +1,17 @@
 import sys
 from typing import Any, Dict, Tuple, Type, TypeVar, Union, cast
 
-# Protocol is only available in the typing module for python 3.8+
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:
-    from typing_extensions import Protocol
-
-
 import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.datasets import load_breast_cancer, load_iris, load_wine
 from sklearn.metrics import f1_score, precision_score, recall_score
+
+# Protocol is only available in the typing module for python 3.8+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 
 class ScikitModel(Protocol):

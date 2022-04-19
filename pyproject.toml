@@ -30,6 +30,7 @@ mkdocs-material = "~=8.2.9"
 mkdocstrings = {extras = ["python"], version = "~=0.18.1"}
 mkdocs-include-markdown-plugin = "~=3.3.0"
 mkdocs-click = "~=0.5.0"
+pre-commit = "~=2.18.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

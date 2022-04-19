@@ -1,35 +1,47 @@
 [tool.poetry]
 name = "thoth"
 version = "0.1.0"
-description = ""
-authors = ["Felix <felix.lonergan@gmail.com>"]
+description = "Interactive playground for machine learning"
+authors = ["Felix Lonergan Corti <felix.lonergan@gmail.com>"]
 
 [tool.poetry.scripts]
 thoth = "thoth.cli:thoth"
 
 [tool.poetry.dependencies]
-python = ">=3.7.1,<3.11"
+python = ">=3.8,<3.11"
 streamlit = "~=1.8"
-pandas = "^1.3.4"
-scikit-learn = "^1.0.1"
-graphviz = "^0.18"
+pandas = "~=1.3.4"
+scikit-learn = "~=1.0.1"
+graphviz = "~=0.18"
 # Pin the version of JSONSchema to avoid a bug in Altair
 # https://github.com/altair-viz/altair/issues/2504
 jsonschema = "==3.2"
-watchdog = "^2.1.6"
+watchdog = "~=2.1.6"
 click = "~=8.0"
+isort = "~=5.10"
 
 [tool.poetry.dev-dependencies]
 black = "~=22.3"
-pylint = "^2.11.1"
-mypy = "^0.910"
-Sphinx = "^4.3.0"
-sphinxcontrib-napoleon = "^0.7"
-pytest = "^6.2.5"
-recommonmark = "^0.7.1"
-sphinx-rtd-theme = "^1.0.0"
+pylint = "~=2.13"
+mypy = "~=0.940"
 safety = "~=1.10"
+mkdocs = "~=1.3.0"
+mkdocs-material = "~=8.2.9"
+mkdocstrings = {extras = ["python"], version = "~=0.18.1"}
+mkdocs-include-markdown-plugin = "~=3.3.0"
+mkdocs-click = "~=0.5.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = ["pandas.*", "sklearn.*", "altair.*"]
+ignore_missing_imports = true

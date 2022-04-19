@@ -1,0 +1,3 @@
+# `thoth.handler`
+
+::: thoth.handler

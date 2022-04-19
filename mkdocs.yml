@@ -1,0 +1,45 @@
+site_name: Thoth
+repo_url: https://github.com/FelixLonergan/thoth
+repo_name: FelixLonergan/thoth
+
+watch:
+  - README.md
+  - CHANGELOG.md
+  - thoth
+
+nav:
+  - Home: README.md
+  - Changelog: CHANGELOG.md
+  - API Reference:
+      - Page Handlers: api/handlers.md
+      - Utils: api/utils.md
+      - api/cli.md
+
+theme:
+  name: material
+  logo: static/thoth_white.png
+  favicon: static/thoth_white.png
+  palette:
+    - scheme: slate
+      media: "(prefers-color-scheme: dark)"
+      primary: purple
+      accent: cyan
+      toggle:
+        icon: "material/lightbulb-outline"
+        name: Switch to light mode
+    - scheme: default
+      media: "(prefers-color-scheme: light)"
+      primary: purple
+      accent: cyan
+      toggle:
+        icon: "material/lightbulb-on-outline"
+        name: Switch to dark mode
+
+plugins:
+  - include-markdown
+  - search
+  - mkdocstrings
+
+markdown_extensions:
+  - attr_list
+  - mkdocs-click

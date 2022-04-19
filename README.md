@@ -22,8 +22,6 @@ You can then start the Thoth application by simply running the following:
 thoth
 ```
 
-## Examples
-### Looking at data
-![eda](docs/static/eda.png)
-### Playing with a model
-![playground](docs/static/playground.png)
+<!-- End Inclusion -->
+
+For more information please see [the full documentation!](https://thoth-ml.readthedocs.io/en/latest/)

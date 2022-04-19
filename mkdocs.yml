@@ -9,6 +9,7 @@ watch:
 
 nav:
   - Home: README.md
+  - Examples: examples.md
   - Changelog: CHANGELOG.md
   - API Reference:
       - Page Handlers: api/handlers.md

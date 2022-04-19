@@ -4,34 +4,26 @@ Thoth is designed to be an interactive explanation of a number of common Machine
 
 ## Installation
 
-To get started with Thoth, first clone the repository using
+The easiest way to get started with Thoth is through [pipx](https://pypa.github.io/pipx/). Once you have installed pipx by following their installation instructions, you can install Thoth by running the following command:
 
 ```bash
-git clone https://github.com/FelixLonergan/Thoth.git
+pipx install thoth-ml
 ```
 
-Package management for this project is handled using the excellent [Poetry](https://python-poetry.org/) library which can be installed with the following command.
+Alternatively, if you don't need Thoth to be installed in its own environment, then you can simply install it with pip
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+pip install --user thoth-ml
 ```
 
-Once you have the repository cloned and poetry installed you will need to install the dependencies of Thoth. You can do this by navigating to the Thoth directory and running
+You can then start the Thoth application by simply running the following:
 
 ```bash
-poetry install --no-dev
-```
-
-By default poetry will create a new virtual environment and install all the required dependencies there. If you are already inside a virtual environment when you run `poetry install` the dependencies will be installed there (see the [Poetry documentation](https://python-poetry.org/docs/) for more information on how Poetry handles virtual environments).
-
-Once you are inside a virtual environment with all the appropriate dependencies installed, simply run the following command from within the repository directory and Thoth should open in a new browser tab.
-
-```bash
-streamlit run run.py
+thoth
 ```
 
 ## Examples
 ### Looking at data
-![eda](https://i.imgur.com/7Pv7xP7.png)
+![eda](docs/static/eda.png)
 ### Playing with a model
-![tree](https://i.imgur.com/NoV1T4t.png)
+![playground](docs/static/playground.png)

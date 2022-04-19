@@ -9,9 +9,7 @@ import pandas as pd
 import streamlit as st
 from sklearn.model_selection import train_test_split
 
-from thoth import SEED
-
-from .. import utils
+from .. import SEED, utils
 
 HANDLER_REGISTRY = {}
 

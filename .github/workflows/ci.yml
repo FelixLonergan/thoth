@@ -1,10 +1,10 @@
 name: CI
-on: push
+on: [push, workflow_dispatch]
 jobs:
   CI:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Install Python
@@ -29,13 +29,13 @@ jobs:
         run: poetry install
 
       - name: Code Formatting
-        run: black . --check
+        run: poetry run black . --check
 
       - name: Sorted Imports
-        run: isort thoth --check --diff
+        run: poetry run isort thoth --check --diff
 
       - name: Code Quality
-        run: pylint thoth
+        run: poetry run pylint thoth
 
       - name: Check Type Hints
-        run: mypy thoth
+        run: poetry run mypy thoth

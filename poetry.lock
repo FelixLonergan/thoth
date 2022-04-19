@@ -1680,8 +1680,8 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings", "mkdocs-include-markdown-pl
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.7,<3.11"
-content-hash = "03b27194d3833b6b6579070f3cfbf5d5588206ce91bfbee8be4d6a28c47a610e"
+python-versions = ">=3.7,<4"
+content-hash = "694b750475a7f9af9b091f3d6d3a39bca0bcf4db3e4029d60761889a99672d5b"
 
 [metadata.files]
 altair = [
